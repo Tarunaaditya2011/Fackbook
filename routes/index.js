@@ -1,6 +1,7 @@
 const express = require("express");
 const passport = require("passport");
 const router = express.Router();
+const { body , validationResult } = require ("express-validator"); 
 const userModel = require("./users");
 
 const data = new userModel()
@@ -14,7 +15,11 @@ router.get("/", function (req, res) {
   res.render("index");
 });
 
-router.post("/reg", function (req, res) {
+router.post("/reg", body ("password").isLength ({ min: 5 }).withMessage("Password should be of minium 5 characters") , 
+ function (req, res) {
+  const errors = validationResult(req); 
+  if (!errors.isEmpty())
+  return res.render("index",errors)
   const dets = new userModel({
     name: req.body.name,
     username: req.body.username,
